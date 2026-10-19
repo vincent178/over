@@ -11,27 +11,43 @@ through the coordinator pane.
 The `herdr` skill is the CLI authority. Read it first. This skill holds the
 collaboration patterns; over-loop (or you, directly) decides WHAT each agent does.
 
+Pane layout: coordinator on the left, worker top-right, verifier
+bottom-right.
+
 ```
-Operator ── intake / escalation ──► Coordinator (this pane)
+┌───────────────┬───────────────┐
+│ Coordinator   │ Worker        │
+│ (this pane)   │ (pi, worktree)│
+│               ├───────────────┤
+│               │ Verifier (pi) │
+└───────────────┴───────────────┘
+
+Operator ── intake / escalation ──► Coordinator
                                      │ herdr: split → agent start → prompt --wait
-                                     ├──► Worker (pi in git worktree) ──► PR
+                                     ├──► Worker ──► PR
                                      ▼
-                                   Verifier (pi, separate pane): diff review, tests, CI
+                                   Verifier: diff review, tests, CI
 ```
 
 ## Dispatch recipe
 
+Split the worker pane to the right of the coordinator, then split that pane
+down for the verifier — this yields coordinator left, worker top-right,
+verifier bottom-right.
+
 ```bash
-# worker in an isolated worktree for repo work; sibling pane, caller keeps focus
+# worker in an isolated worktree for repo work; right-hand pane, caller keeps focus
 split=$(herdr pane split --current --direction right --cwd "$PWD" --no-focus)
 pane=$(printf '%s\n' "$split" | jq -r '.result.pane.pane_id')
 herdr agent start <worker-name> --kind pi --pane "$pane"
 herdr agent prompt <worker-name> "Read .pi/tasks/<id>.md and implement it. Follow the repo AGENTS.md. Your scope is implementation only: record results in the card's Evidence section, then stop. Do not run verification or retro, do not touch the card's Retro section or .pi/knowledge/, and do not change the card's frontmatter status/attempts — the coordinator owns the lifecycle." --wait --timeout 600000
 ```
 
-Then verify with a separate agent:
+Then verify with a separate agent in the pane below the worker:
 
 ```bash
+split=$(herdr pane split --pane "$pane" --direction down --cwd "$PWD" --no-focus)
+verifier_pane=$(printf '%s\n' "$split" | jq -r '.result.pane.pane_id')
 herdr agent start <verifier-name> --kind pi --pane "$verifier_pane"
 herdr agent prompt <verifier-name> "Verify .pi/tasks/<id>.md: review the diff, run the tests, report pass/fail with evidence." --wait --timeout 600000
 ```

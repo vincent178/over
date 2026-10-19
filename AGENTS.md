@@ -20,6 +20,12 @@ stay company- and person-agnostic.
 - Task cards are plain Markdown written with pi's native file tools;
   `skills/over-loop/SKILL.md` is the single source of the card format.
 
+## Installed copies are read-only
+
+Edit only the files in this repo. Never modify installed copies of the
+package (e.g. under `~/.pi/agent/git/...`) — those are updated through the
+normal install/sync flow (commit → push → pull), not by hand.
+
 ## Verify before committing
 
 - Load test for extension changes: `pi -e ./extensions/index.ts`, or install
