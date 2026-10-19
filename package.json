@@ -1,0 +1,21 @@
+{
+  "name": "over",
+  "version": "0.1.0",
+  "description": "A task loop for pi agents: Observe, Execute, Verify, Retro.",
+  "type": "module",
+  "keywords": [
+    "pi-package"
+  ],
+  "license": "MIT",
+  "pi": {
+    "extensions": [
+      "./extensions/index.ts"
+    ],
+    "skills": [
+      "./skills"
+    ]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  }
+}

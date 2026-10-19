@@ -1,0 +1,4 @@
+.pi/goals/
+.DS_Store
+.pi/.goals-pool-snapshot.json
+.playwright-cli/
