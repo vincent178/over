@@ -76,8 +76,8 @@ Before any dispatch:
 - Search the repo's `.pi/knowledge/` if present: skim the file tops
   (`head .pi/knowledge/*.md` — titles and opening lines name each file's
   systems) to see what exists, then `rg -i` for the task's systems and read
-  the matches — access paths, domain semantics, dead ends. Inline the
-  relevant pointers into the card; the card is the worker's only context.
+  the matches. Inline the relevant pointers into the card; the card is the
+  worker's only context.
 - Establish which data/access paths actually exist before letting a card
   declare anything impossible.
 
