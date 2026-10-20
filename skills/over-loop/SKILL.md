@@ -73,9 +73,11 @@ Before any dispatch:
 
 - Reproduce or baseline the problem; anchor evidence (IDs, queries, file
   paths). Never dispatch on a paraphrase of a report.
-- `rg` the repo's `.pi/knowledge/` for the task's systems and keywords: access
-  paths, domain semantics, dead ends. Inline the relevant pointers into the
-  card; the card is the worker's only context.
+- Search the repo's `.pi/knowledge/` if present: skim the file tops
+  (`head .pi/knowledge/*.md` — titles and opening lines name each file's
+  systems) to see what exists, then `rg -i` for the task's systems and read
+  the matches — access paths, domain semantics, dead ends. Inline the
+  relevant pointers into the card; the card is the worker's only context.
 - Establish which data/access paths actually exist before letting a card
   declare anything impossible.
 
@@ -130,9 +132,11 @@ yourself as raw input to step 1.
    (knowledge/access that existed but wasn't on the card), timeouts,
    redispatches.
 2. Turn each into a candidate lesson with a typed destination:
-   `.pi/knowledge/` (a fact that was missing), the shipping package's `skills/`
-   (a procedure fix), `AGENTS.md` (a rule), or case data that stays in
-   `.pi/tasks/`.
+   `.pi/knowledge/` (a fact that was missing), the missed file's title or
+   opening lines (a fact that existed but was missed — amend them to carry
+   the task's vocabulary), the shipping package's `skills/` (a procedure fix),
+   the project's standing-instructions file (a rule — `AGENTS.md` or its
+   equivalent), or case data that stays in `.pi/tasks/`.
 3. Every candidate must cite its friction event; candidates without one are
    discarded. `lessons: none` is the default and a valid outcome. Never
    manufacture lessons.

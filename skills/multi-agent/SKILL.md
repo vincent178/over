@@ -40,7 +40,7 @@ verifier bottom-right.
 split=$(herdr pane split --current --direction right --cwd "$PWD" --no-focus)
 pane=$(printf '%s\n' "$split" | jq -r '.result.pane.pane_id')
 herdr agent start <worker-name> --kind pi --pane "$pane"
-herdr agent prompt <worker-name> "Read .pi/tasks/<id>.md and implement it. Follow the repo AGENTS.md. Your scope is implementation only: record results in the card's Evidence section, then stop. Do not run verification or retro, do not touch the card's Retro section or .pi/knowledge/, and do not change the card's frontmatter status/attempts — the coordinator owns the lifecycle." --wait --timeout 600000
+herdr agent prompt <worker-name> "Read .pi/tasks/<id>.md and implement it. Follow the repo's agent instructions if present (e.g. AGENTS.md). Your scope is implementation only: record results in the card's Evidence section, then stop. Do not run verification or retro, do not touch the card's Retro section or .pi/knowledge/, and do not change the card's frontmatter status/attempts — the coordinator owns the lifecycle." --wait --timeout 600000
 ```
 
 Then verify with a separate agent in the pane below the worker:
