@@ -87,6 +87,10 @@ Output: the task card, ready for dispatch.
 - Workers own implementation only. They fill Evidence and stop; they never
   run Verify or Retro, never fill the card's Retro section, and never write
   to `.pi/knowledge/`. Say so in the dispatch prompt.
+- Every checked number in Evidence carries its retrieval recipe — tool,
+  exact query/target, time window, filters — where "checked" means the
+  verifier is asked to re-check it. A checked number without a recipe is a
+  card defect to send back.
 - Update the card's status field and Evidence section as the task moves;
   increment `attempts` on every redispatch.
 - Monitor interrupt-driven (`agent wait --until blocked`), not by polling.
@@ -108,7 +112,9 @@ Output: the task card, ready for dispatch.
   states and worker self-reports are not proof of completion. Only
   artifacts are: PR exists, tests pass, CI green.
 - The verifier reviews the diff, re-runs the checks, and reports pass/fail
-  with evidence; the verdict goes on the card.
+  with evidence; the verdict goes on the card. Re-run a checked number's
+  recorded recipe to confirm it; probe beyond the recipe to test whether
+  the conclusion survives.
 - Twice-failed tasks go to the operator, not back to a worker.
 
 ## 4. Retro
