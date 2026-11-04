@@ -67,6 +67,17 @@ Card status lifecycle:
 `intake → dispatched → implementing → verifying → retro → done | escalated`.
 Increment `attempts` on every redispatch.
 
+Check Done criteria against the objective and against each other before
+dispatch: a criterion that contradicts the design goal guarantees an
+escalation after wasted work. When the task intentionally changes behavior
+(a bug fix riding on a refactor), parity criteria must read "every
+divergence reproduced and explained by experiment, all other paths
+identical" — "output bit-identical" is then unachievable by construction
+(a coordinator once paired bit-identical parity with a behavior fix in one
+task pair; the worker proved them mutually exclusive and stopped mid-task).
+For pure refactors with no intended behavior change, bit-identical stays
+the right bar.
+
 ## 1. Observe
 
 Before any dispatch:
