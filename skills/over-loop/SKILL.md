@@ -59,7 +59,7 @@ Use this task-card format:
     title: Alias label batches
     repo: github.com/org/repo
     branch:
-    status: intake
+    status: new
     attempts: 0
     ---
 
@@ -92,7 +92,7 @@ Frontmatter uses line-based `key: value` fields. Do not use nested values.
 Use this status lifecycle:
 
 ```text
-intake → dispatched → implementing → verifying → retro → done | escalated
+new → dispatched → implementing → verifying → retro → done | escalated
 ```
 
 Increment `attempts` for every execution retry.

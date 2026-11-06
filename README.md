@@ -77,7 +77,7 @@ orchestrated work. Do not poll.
 The task-card status follows this lifecycle:
 
 ```text
-intake → dispatched → implementing → verifying → retro → done | escalated
+new → dispatched → implementing → verifying → retro → done | escalated
 ```
 
 **Verify.** Orchestrated tasks use one verifier per task. The verifier must be
