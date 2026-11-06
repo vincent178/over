@@ -49,7 +49,7 @@ Then verify with a separate agent in the pane below the worker:
 split=$(herdr pane split --pane "$pane" --direction down --cwd "$PWD" --no-focus)
 verifier_pane=$(printf '%s\n' "$split" | jq -r '.result.pane.pane_id')
 herdr agent start <verifier-name> --kind pi --pane "$verifier_pane"
-herdr agent prompt <verifier-name> "Verify .pi/tasks/<id>.md: review the diff, run the tests, report pass/fail with evidence." --wait --timeout 600000
+herdr agent prompt <verifier-name> "Verify .pi/tasks/<id>.md: review the diff and run the tests. Perform adversarial review of assumptions, edge cases, failure modes, security, concurrency, data integrity, scalability, and operational risks. Record evidence for each applicable area. Explain why each other area does not apply. Report pass/fail with evidence on the card." --wait --timeout 600000
 ```
 
 Interrupt-driven escalation while workers run:

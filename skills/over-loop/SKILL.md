@@ -128,6 +128,28 @@ Output: the task card, ready for dispatch.
   with evidence; the verdict goes on the card. Re-run a checked number's
   recorded recipe to confirm it; probe beyond the recipe to test whether
   the conclusion survives.
+- The verifier must perform adversarial review. It must try to disprove
+  correctness, not only confirm the expected behavior.
+- Review every area below. Run focused checks for each applicable area.
+  Record evidence for each result. Explain why an area does not apply
+  instead of omitting it.
+  - **Assumptions:** Challenge requirements, inputs, environment,
+    dependencies, and test representativeness.
+  - **Edge cases:** Test boundaries, empty or malformed inputs, limits, and
+    unusual valid states.
+  - **Failure modes:** Test errors, timeouts, retries, partial completion,
+    and recovery.
+  - **Security:** Check authorization, input handling, secret exposure, and
+    untrusted data paths.
+  - **Concurrency:** Check races, duplicate execution, shared state, and
+    isolation.
+  - **Data integrity:** Check validation, transactions, partial writes,
+    retries, and consistency.
+  - **Scalability:** Check growth in data, traffic, memory, runtime, and
+    resource use.
+  - **Operational risks:** Check deployment, rollback, compatibility,
+    observability, and recovery procedures.
+- A verdict without this adversarial review is incomplete.
 - Twice-failed tasks go to the operator, not back to a worker.
 
 ## 4. Retro

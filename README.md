@@ -70,8 +70,9 @@ card; the card is the worker's only context.
 `intake → dispatched → implementing → verifying → retro → done | escalated`.
 
 **Verify.** One verifier per task, separate from the worker. It reviews the diff and
-re-runs the checks; the verdict goes on the card. Twice-failed tasks go to you, not
-back to a worker.
+re-runs the checks. It also performs adversarial review across assumptions, edge cases,
+failure modes, security, concurrency, data integrity, scalability, and operational risks.
+The verdict and evidence go on the card. Twice-failed tasks go to you, not back to a worker.
 
 **Retro.** The coordinator runs it (it holds the decision context): collects friction
 events, drafts candidate lessons, reviews them with you one at a time, and writes only
