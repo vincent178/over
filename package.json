@@ -1,7 +1,7 @@
 {
   "name": "over",
   "version": "0.1.0",
-  "description": "A task loop for pi agents: Observe, Execute, Verify, Retro.",
+  "description": "Run the Observe, Execute, Verify, and Retro loop for a task in pi.",
   "type": "module",
   "keywords": [
     "pi-package"

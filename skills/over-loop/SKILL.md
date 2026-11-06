@@ -1,34 +1,60 @@
 ---
 name: over-loop
-description: Coordinate end-to-end task completion with the Observe-Execute-Verify-Retro loop, triggered by the /over command; task cards as source of truth, worker agents for implementation, a separate verifier for artifact-based proof, and a coordinator-run retro that writes lessons back into knowledge/, skills, and rules. Use when a task should be decomposed, dispatched, verified independently, and driven to a PR without per-step human input. Worker dispatch requires HERDR_ENV=1 and the multi-agent skill; without herdr the loop runs single-agent.
+description: >-
+  Run the Observe, Execute, Verify, and Retro loop for a task. Use an available
+  orchestrator for worker and verifier agents. Otherwise, use one agent. Record
+  evidence on a task card. Drive the task to a pull request.
 ---
 
 # The over loop
 
-You are the coordinator. Worker agents launch on your orders.
-Every task runs through the loop (**Observe → Execute → Verify → Retro**),
-and you escalate to the human operator at the gates listed below. You do not
-write the implementation yourself.
+You are the coordinator. Every task uses this loop:
 
-Entry point: the operator runs `/over <task>`, which hands you the task and
-puts you in the coordinator role. Worker dispatch needs herdr
-(`HERDR_ENV=1`); without it, run the same loop single-agent.
+```text
+Observe → Execute → Verify → Retro
+```
 
-The mechanics of running multiple agents (pane topology, dispatch, waiting,
-blocked-state handling) live in the `multi-agent` skill. Read it before your
-first dispatch. All pane/agent operations go through the `herdr` CLI.
+Escalate to the operator at the gates in this procedure.
+
+The operator starts the loop with `/over <task>`. The command gives you the
+task and the coordinator role.
+
+## Execution mode
+
+Inspect the available tools and skills before execution. Find an agent
+orchestrator. `pi-fleet` provides the `fleet` tool and `fleet` skill when
+installed.
+
+When an orchestrator is available, read its skill. Use its documented
+interface for all agent operations. Do not install an orchestrator during a
+task. Do not add an orchestrator dependency to `over`.
+
+When no orchestrator is available, run the full loop in the current session.
+Do not create agents through direct Herdr commands.
+
+For orchestrated work, send the task-card path and full role instructions.
+Record the assignment ID and agent name in Evidence. Use the same orchestrator
+for every mutation of that assignment.
+
+Orchestrator states support synchronization only. Artifacts provide completion
+proof.
 
 ## Task cards
 
-The task card is the single source of truth. Worker context is volatile
-(compaction, restarts, rebuilds); the card is not. Create one card per task
-with the write tool at `.pi/tasks/<id>.md` in the current repo, id
-`task-<YYYYMMDD>-<title-slug>`. Dispatch by sending the worker the card
-path, not an inline spec. Move the card and record evidence with the edit
-tool as the task progresses.
+The task card is the source of truth. Worker context is volatile. The task
+card persists.
 
-Canonical card format (frontmatter is line-based `key: value`, no nested
-values):
+Create one task card per task. Use the write tool. Store the task card at
+`.pi/tasks/<id>.md` in the current repository. Use this ID format:
+
+```text
+task-<YYYYMMDD>-<title-slug>
+```
+
+In orchestrated mode, send the task-card path to the worker. Do not send an
+inline specification. Update the task card with the edit tool as work proceeds.
+
+Use this task-card format:
 
     ---
     id: task-20261014-alias-label-batches
@@ -41,19 +67,19 @@ values):
 
     ## Objective
 
-    One paragraph: what changes, for whom, why now.
+    State the required change, the beneficiary, and the reason.
 
     ## Done criteria
 
-    - Verifiable, artifact-anchored criteria.
+    - Add verifiable criteria that reference artifacts.
 
     ## Context
 
-    Files, docs, prior PRs, error IDs, .pi/knowledge/ pointers.
+    List files, documents, pull requests, errors, and knowledge pointers.
 
     ## Boundaries
 
-    What the worker must not touch.
+    List prohibited actions and files.
 
     ## Evidence
 
@@ -61,125 +87,166 @@ values):
 
     ## Retro
 
-    (coordinator only — workers never fill this section)
+    The coordinator owns this section. Workers must not edit this section.
 
-Card status lifecycle:
-`intake → dispatched → implementing → verifying → retro → done | escalated`.
-Increment `attempts` on every redispatch.
+Frontmatter uses line-based `key: value` fields. Do not use nested values.
 
-Check Done criteria against the objective and against each other before
-dispatch: a criterion that contradicts the design goal guarantees an
-escalation after wasted work. When the task intentionally changes behavior
-(a bug fix riding on a refactor), parity criteria must read "every
-divergence reproduced and explained by experiment, all other paths
-identical" — "output bit-identical" is then unachievable by construction
-(a coordinator once paired bit-identical parity with a behavior fix in one
-task pair; the worker proved them mutually exclusive and stopped mid-task).
-For pure refactors with no intended behavior change, bit-identical stays
-the right bar.
+Use this status lifecycle:
+
+```text
+intake → dispatched → implementing → verifying → retro → done | escalated
+```
+
+Increment `attempts` for every execution retry.
+
+Compare Done criteria with the objective. Compare the criteria with each other.
+Resolve contradictions before execution.
+
+A task can intentionally change behavior during a refactor. In that case,
+require an experiment for every output divergence. Explain each divergence.
+Keep every other path identical. Do not require bit-identical output for an
+intentional behavior change.
+
+For a pure refactor, require bit-identical output.
 
 ## 1. Observe
 
-Before any dispatch:
+Complete these actions before execution:
 
-- Reproduce or baseline the problem; anchor evidence (IDs, queries, file
-  paths). Never dispatch on a paraphrase of a report.
-- Search the repo's `.pi/knowledge/` if present: skim the file tops
-  (`head .pi/knowledge/*.md` — titles and opening lines name each file's
-  systems) to see what exists, then `rg -i` for the task's systems and read
-  the matches. Inline the relevant pointers into the card; the card is the
-  worker's only context.
-- Establish which data/access paths actually exist before letting a card
-  declare anything impossible.
+- Reproduce the problem or record a baseline. Include IDs, queries, and paths.
+- Never execute a paraphrase of a report.
+- Search `.pi/knowledge/` when the directory exists.
+- Skim titles and opening lines with `head .pi/knowledge/*.md`.
+- Use `rg -i` to find relevant systems. Read the matching files.
+- Add relevant knowledge pointers to the task card.
+- Establish available data and access paths. Use this evidence before you
+  declare an action impossible.
 
-Output: the task card, ready for dispatch.
+Output: a task card that is ready for execution.
 
 ## 2. Execute
 
-- Dispatch workers per the multi-agent skill; the card path is the spec.
-- Workers own implementation only. They fill Evidence and stop; they never
-  run Verify or Retro, never fill the card's Retro section, and never write
-  to `.pi/knowledge/`. Say so in the dispatch prompt.
-- Every checked number in Evidence carries its retrieval recipe — tool,
-  exact query/target, time window, filters — where "checked" means the
-  verifier is asked to re-check it. A checked number without a recipe is a
-  card defect to send back.
-- Update the card's status field and Evidence section as the task moves;
-  increment `attempts` on every redispatch.
-- Monitor interrupt-driven (`agent wait --until blocked`), not by polling.
+- In orchestrated mode, dispatch workers through the orchestrator. The
+  task-card path is the specification.
+- In single-agent mode, implement the task in the current session. Record
+  results in Evidence. Do not create direct Herdr agents.
+- Give workers implementation responsibility only.
+- Require workers to fill Evidence and stop.
+- Require workers to stop their background processes. Include servers and
+  watchers.
+- Require workers to leave the checkout clean.
+- Workers must not run Verify or Retro.
+- Workers must not edit the Retro section or `.pi/knowledge/`.
+- Workers must not change frontmatter `status` or `attempts`.
+- Include these restrictions in every worker prompt.
+- Update `status` and Evidence as the task proceeds.
+- Increment `attempts` for every execution retry.
+- In orchestrated mode, use interrupt-driven waits through the orchestrator.
+- Do not poll.
+- After a timeout or uncertain prompt delivery, inspect the agent output. Do
+  not resubmit the prompt blindly.
+- If a worker stops or its context becomes unusable, start a replacement.
+  Give the replacement the same task card. Do not reconstruct context from
+  terminal output.
 
-### Escalation gates (always stop and ask the human operator)
+Every checked number in Evidence needs a retrieval recipe. Include the tool,
+exact query or target, time window, and filters. The verifier must repeat this
+recipe. Treat a missing recipe as a task-card defect. Return the task card for
+correction.
 
-- Merge and deploy. Never merge a PR autonomously.
-- Destructive or irreversible actions (data deletion, force-push on shared
-  branches, touching another person's PR).
-- External communication in the operator's name (Slack messages, PR comments
-  to others).
-- A worker is `blocked` and you lack the authority or information to answer.
-- The same task fails verification twice. Escalate with the evidence instead
-  of retrying a third time.
+### Escalation gates
+
+Stop and ask the operator in these cases:
+
+- Merge or deployment. Never merge a pull request autonomously.
+- Destructive or irreversible actions. Examples include data deletion,
+  force-push on shared branches, and changes to another person's pull request.
+- External communication in the operator's name. Examples include Slack
+  messages and pull-request comments to other people.
+- A blocked worker needs information or authority that you do not have.
+- The same task fails verification twice. Provide the evidence. Do not start a
+  third attempt.
 
 ## 3. Verify
 
-- One verifier per task, separate from the worker. herdr `idle`/`done`
-  states and worker self-reports are not proof of completion. Only
-  artifacts are: PR exists, tests pass, CI green.
-- The verifier reviews the diff, re-runs the checks, and reports pass/fail
-  with evidence; the verdict goes on the card. Re-run a checked number's
-  recorded recipe to confirm it; probe beyond the recipe to test whether
-  the conclusion survives.
-- The verifier must perform adversarial review. It must try to disprove
-  correctness, not only confirm the expected behavior.
-- Review every area below. Run focused checks for each applicable area.
-  Record evidence for each result. Explain why an area does not apply
-  instead of omitting it.
-  - **Assumptions:** Challenge requirements, inputs, environment,
-    dependencies, and test representativeness.
-  - **Edge cases:** Test boundaries, empty or malformed inputs, limits, and
-    unusual valid states.
-  - **Failure modes:** Test errors, timeouts, retries, partial completion,
-    and recovery.
-  - **Security:** Check authorization, input handling, secret exposure, and
-    untrusted data paths.
-  - **Concurrency:** Check races, duplicate execution, shared state, and
-    isolation.
-  - **Data integrity:** Check validation, transactions, partial writes,
-    retries, and consistency.
-  - **Scalability:** Check growth in data, traffic, memory, runtime, and
-    resource use.
-  - **Operational risks:** Check deployment, rollback, compatibility,
-    observability, and recovery procedures.
-- A verdict without this adversarial review is incomplete.
-- Twice-failed tasks go to the operator, not back to a worker.
+Orchestrated tasks require exactly one verifier per task. The verifier must be
+separate from the worker.
+
+Single-agent tasks use the current agent for verification. Record that the
+verification was not independent.
+
+Orchestrator states and worker self-reports do not prove completion. Use
+artifacts as proof. Examples include an open pull request, passing tests, and
+green CI.
+
+The verifier performs these actions:
+
+- Review the diff.
+- Run the tests again.
+- Report pass or fail with evidence on the task card.
+- Repeat each checked number's retrieval recipe.
+- Test whether each conclusion survives probes beyond its recipe.
+- Try to disprove correctness. Do not only confirm expected behavior.
+
+Review every area below. Run focused tests for each applicable area. Record
+evidence for every result. Record a reason when an area does not apply.
+
+- **Assumptions:** Challenge requirements, inputs, environment, dependencies,
+  and test representativeness.
+- **Edge cases:** Test boundaries, empty inputs, malformed inputs, limits, and
+  unusual valid states.
+- **Failure modes:** Test errors, timeouts, retries, partial completion, and
+  recovery.
+- **Security:** Test authorization and input handling. Inspect secret exposure
+  and untrusted data paths.
+- **Concurrency:** Test races, duplicate execution, shared state, and
+  isolation.
+- **Data integrity:** Test validation, transactions, partial writes, retries,
+  and consistency.
+- **Scalability:** Test growth in data, traffic, memory, runtime, and resource
+  use.
+- **Operational risks:** Review deployment, rollback, compatibility,
+  observability, and recovery procedures.
+
+A verdict without adversarial review is incomplete. After two failures, send
+the task to the operator. Do not return it to a worker.
 
 ## 4. Retro
 
-Only the coordinator runs the retro — never a worker, never the verifier.
-The coordinator holds the full decision context; another agent would have to
-reconstruct why each call was made. If a worker starts volunteering lessons
-or editing the card's Retro section, stop it and collect its friction events
-yourself as raw input to step 1.
+Only the coordinator runs Retro. Workers and verifiers must not run Retro.
+The coordinator holds the decision context. Another agent would need to
+reconstruct the decisions.
 
-1. Collect friction events from the card and run history: attempts > 1,
-   escalations, verifier findings below full PASS, observe misses
-   (knowledge/access that existed but wasn't on the card), timeouts,
-   redispatches.
-2. Turn each into a candidate lesson with a typed destination:
-   `.pi/knowledge/` (a fact that was missing), the missed file's title or
-   opening lines (a fact that existed but was missed — amend them to carry
-   the task's vocabulary), the shipping package's `skills/` (a procedure fix),
-   the project's standing-instructions file (a rule — `AGENTS.md` or its
-   equivalent), or case data that stays in `.pi/tasks/`.
-3. Every candidate must cite its friction event; candidates without one are
-   discarded. `lessons: none` is the default and a valid outcome. Never
-   manufacture lessons.
-4. Review candidates with the operator one at a time; write only ratified
+Stop a worker that proposes lessons or edits the Retro section. Collect its
+friction events as input for the first step.
+
+1. Collect friction events from the task card and run history. Include retries,
+   escalations, verification findings below full PASS, observe misses,
+   timeouts, and redispatches. An observe miss is available knowledge or access
+   that the task card omitted.
+2. Assign each candidate lesson to one destination:
+   - Use `.pi/knowledge/` for a missing fact.
+   - Amend an existing file's title or opening lines for a missed fact. Include
+     the task vocabulary.
+   - Use the shipping package's `skills/` for a procedure correction.
+   - Use `AGENTS.md` or the project's equivalent file for a standing rule.
+   - Use `.pi/tasks/` for case data.
+3. Require every candidate lesson to cite a friction event. Discard candidates
+   without evidence. `lessons: none` is valid. Never invent lessons.
+4. Review candidates with the operator one at a time. Record only approved
    lessons.
-5. Fill the card's Retro section, then move status to `done`.
+5. Fill the Retro section. Move `status` to `done`.
 
-## Definition of done for a task
+## Definition of done
 
-Card status `done` requires: reproduction/baseline recorded, change verified
-by the verifier with evidence on the card, PR open, CI green, review findings
-addressed, and the Retro section filled (even if `none`). Merge is the
-operator's call unless they say otherwise.
+A task can reach `done` only when it meets all applicable criteria:
+
+- The task card records the reproduction or baseline.
+- Verification evidence is on the task card.
+- An independent verifier approved every orchestrated task.
+- A pull request is open.
+- CI is green.
+- The task addresses every review finding.
+- The coordinator filled the Retro section. `none` is valid.
+
+The operator decides merge unless the operator delegates that decision.
