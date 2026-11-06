@@ -14,8 +14,8 @@ with a retro. The retro records approved lessons.
 /over <task>
    │
  Observe ──→ Execute ──→ Verify ──→ Retro ──→ done
- reproduce    implement    artifact    lessons      │
- + card       worker/self  review      record      │ fail ×2, merge,
+ reproduce    worker       separate    lessons      │
+ + card       agents       verifier    write back   │ fail ×2, merge,
                │             │                      │ destructive, or
                ▼             ▼                      ▼ external comms
            task card      artifacts              escalate
