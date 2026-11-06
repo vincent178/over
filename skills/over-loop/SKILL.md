@@ -22,8 +22,7 @@ task and the coordinator role.
 ## Execution mode
 
 Inspect the available tools and skills before execution. Find an agent
-orchestrator. `pi-fleet` provides the `fleet` tool and `fleet` skill when
-installed.
+orchestrator.
 
 When an orchestrator is available, read its skill. Use its documented
 interface for all agent operations. Do not install an orchestrator during a

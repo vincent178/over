@@ -31,8 +31,8 @@ pi install git:github.com/vincent178/over
 Run `/over <task>` after installation.
 
 The coordinator inspects the available tools and skills before execution.
-It looks for an agent orchestrator. An orchestrator such as `pi-fleet` can
-manage workers and verifiers.
+It looks for an agent orchestrator. The orchestrator manages workers and
+verifiers.
 
 Without an orchestrator, one agent runs the full loop. `over` does not require
 or install an orchestrator. It has no direct Herdr dispatch path.
