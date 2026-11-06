@@ -1,11 +1,8 @@
 /**
  * over: Observe, Execute, Verify, Retro.
  *
- * The `/over <task>` command is the entry point: it triggers the OEVR loop
- * for a task by putting the agent in the coordinator role (procedure: the
- * over-loop and multi-agent skills). Task cards in ./.pi/tasks are the single
- * source of truth while worker context is volatile; they are plain Markdown
- * files the agent writes with pi's native file tools.
+ * The over-loop skill defines the procedure. Task cards in ./.pi/tasks are
+ * the source of truth. Pi's native file tools create and update task cards.
  */
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
@@ -13,7 +10,7 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 const TRIGGER_PROMPT = (task: string) => `${task}
 
 ---
-Run this task through the over loop. You are the coordinator: read the over-loop skill now and follow it (read the multi-agent skill before your first dispatch). Do not write the implementation yourself. Escalate at the gates listed in the skill.`;
+Run this task through the over loop. Read the over-loop skill now. Follow its procedure. Use orchestrated execution when an orchestrator is available. Otherwise, use single-agent execution. Escalate at the defined gates.`;
 
 export default function (pi: ExtensionAPI) {
 	pi.registerCommand("over", {
@@ -23,12 +20,6 @@ export default function (pi: ExtensionAPI) {
 			if (!task) {
 				ctx.ui.notify("Usage: /over <task description>", "info");
 				return;
-			}
-			if (!process.env.HERDR_ENV) {
-				ctx.ui.notify(
-					"HERDR_ENV is not set, so worker dispatch via herdr is unavailable. The loop will run single-agent.",
-					"warning",
-				);
 			}
 			await pi.sendUserMessage(TRIGGER_PROMPT(task));
 		},

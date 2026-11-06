@@ -1,32 +1,39 @@
 # over
 
-**over** is the OEVR (Observe, Execute, Verify, Retro) multi-agent
-collaboration framework, shipped as a pi package. It ships an extension
-(`extensions/`: the `/over` command that triggers the loop) and skills
-(`skills/`). See `README.md` for the layout.
+**over: Observe, Execute, Verify, Retro.**
+
+The package supports single-agent and orchestrated execution.
+
+The `extensions/` directory contains the `/over` command. The `skills/`
+directory contains the loop procedure. See `README.md` for the package layout.
 
 ## Hard boundary
 
-over is operator-agnostic. Anything specific to an employer, a repo, or a
-person (knowledge, task cards, identity, operational rules, MCP wiring)
-belongs in the consuming project, never here. Skills and extension code must
-stay company- and person-agnostic.
+Keep `over` independent of operators and consuming projects.
+
+Store employer, repository, and personal details in the consuming project.
+This rule covers knowledge, task cards, identities, operational rules, and MCP
+configuration. Never store those details in `over`.
+
+Keep skills and extension code independent of companies and people.
 
 ## Coding protocol
 
-- Extensions are TypeScript loaded via jiti; no build step.
-- Host-provided packages (`@earendil-works/*`, `typebox`) go in
-  `peerDependencies` with `"*"`; never in `dependencies`.
-- Task cards are plain Markdown written with pi's native file tools;
-  `skills/over-loop/SKILL.md` is the single source of the card format.
+- Pi loads TypeScript extensions through jiti. Do not add a build step.
+- Declare host packages in `peerDependencies` with the `"*"` range.
+- Never declare host packages in `dependencies`.
+- Host packages include `@earendil-works/*` and `typebox`.
+- Write task cards as plain Markdown with pi's native file tools.
+- Use `skills/over-loop/SKILL.md` as the only task-card format definition.
 
 ## Installed copies are read-only
 
-Edit only the files in this repo. Never modify installed copies of the
-package (e.g. under `~/.pi/agent/git/...`) — those are updated through the
-normal install/sync flow (commit → push → pull), not by hand.
+Edit only files in this repository. Never edit installed package copies under
+`~/.pi/agent/git/...` or another installation directory.
+
+Update installed copies through the normal commit, push, and pull flow.
 
 ## Verify before committing
 
-- Load test for extension changes: `pi -e ./extensions/index.ts`, or install
-  into a consumer project and exercise `/over` end to end.
+- For extension changes, run `pi -e ./extensions/index.ts`.
+- Alternatively, install the package in a consumer project. Run `/over` end to end.
