@@ -143,9 +143,9 @@ Output: a task card that is ready for execution.
 - Do not poll.
 - After a timeout or uncertain prompt delivery, inspect the agent output. Do
   not resubmit the prompt blindly.
-- If a worker stops or its context becomes unusable, start a replacement.
-  Give the replacement the same task card. Do not reconstruct context from
-  terminal output.
+- If a worker stops before completing its assignment, start a replacement.
+  Also replace a worker when its context becomes unusable. Give the replacement
+  the same task card. Do not reconstruct context from terminal output.
 
 Every checked number in Evidence needs a retrieval recipe. Include the tool,
 exact query or target, time window, and filters. The verifier must repeat this
@@ -240,7 +240,7 @@ friction events as input for the first step.
 A task can reach `done` only when it meets all applicable criteria:
 
 - The task card records the reproduction or baseline.
-- Verification evidence is on the task card.
+- The task passed verification. The task card records the evidence.
 - An independent verifier approved every orchestrated task.
 - A pull request is open.
 - CI is green.
