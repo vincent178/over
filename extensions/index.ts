@@ -14,7 +14,7 @@ Run this task through the over loop. Read the over-loop skill now. Follow its pr
 
 export default function (pi: ExtensionAPI) {
 	pi.registerCommand("over", {
-		description: "over: Observe, Execute, Verify, Retro.",
+		description: "Run a task through the over loop: Observe → Execute → Verify → Retro",
 		handler: async (args, ctx) => {
 			const task = args.trim();
 			if (!task) {
