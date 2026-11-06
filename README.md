@@ -1,6 +1,6 @@
 # over
 
-**over runs the Observe, Execute, Verify, and Retro loop for a task in pi.**
+**over: Observe, Execute, Verify, Retro.**
 
 Run `/over fix the flaky checkout test` to start the loop. The coordinator
 reproduces the problem and writes a task card. It then selects an execution

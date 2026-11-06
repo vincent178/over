@@ -1,5 +1,5 @@
 /**
- * The `/over <task>` command starts the OEVR loop.
+ * over: Observe, Execute, Verify, Retro.
  *
  * The over-loop skill defines the procedure. Task cards in ./.pi/tasks are
  * the source of truth. Pi's native file tools create and update task cards.
@@ -14,7 +14,7 @@ Run this task through the over loop. Read the over-loop skill now. Follow its pr
 
 export default function (pi: ExtensionAPI) {
 	pi.registerCommand("over", {
-		description: "Run the Observe, Execute, Verify, and Retro loop for a task",
+		description: "over: Observe, Execute, Verify, Retro.",
 		handler: async (args, ctx) => {
 			const task = args.trim();
 			if (!task) {

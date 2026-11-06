@@ -1,7 +1,7 @@
 ---
 name: over-loop
 description: >-
-  Run the Observe, Execute, Verify, and Retro loop for a task. Use an available
+  over: Observe, Execute, Verify, Retro. Use an available
   orchestrator for worker and verifier agents. Otherwise, use one agent. Record
   evidence on a task card. Drive the task to a pull request.
 ---
@@ -30,7 +30,6 @@ interface for all agent operations. Do not install an orchestrator during a
 task. Do not add an orchestrator dependency to `over`.
 
 When no orchestrator is available, run the full loop in the current session.
-Do not create agents through direct Herdr commands.
 
 For orchestrated work, send the task-card path and full role instructions.
 Record the assignment ID and agent name in Evidence. Use the same orchestrator

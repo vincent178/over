@@ -1,7 +1,8 @@
 # over
 
-**over** is the OEVR task-loop framework. OEVR means Observe, Execute, Verify,
-and Retro. The package supports single-agent and orchestrated execution.
+**over: Observe, Execute, Verify, Retro.**
+
+The package supports single-agent and orchestrated execution.
 
 The `extensions/` directory contains the `/over` command. The `skills/`
 directory contains the loop procedure. See `README.md` for the package layout.
