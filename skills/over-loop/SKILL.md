@@ -8,7 +8,7 @@ description: >-
 
 # The over loop
 
-You are the coordinator. Every task uses this loop:
+You are the coordinator for tasks that use this loop:
 
 ```text
 Observe → Execute → Verify → Retro
@@ -18,6 +18,17 @@ Escalate to the operator at the gates in this procedure.
 
 The operator starts the loop with `/over <task>`. The command gives you the
 task and the coordinator role.
+
+## Task selection
+
+Skip this procedure for a small and simple task unless the operator explicitly
+requests it. A small and simple task has a narrow scope, low risk, and direct
+verification.
+
+For a skipped task, make the change and verify it in the current session. Do
+not create a task card or dispatch agents. Do not require a pull request or CI
+unless the operator requests them. Ask the operator when the task scope is
+uncertain.
 
 ## Execution mode
 
