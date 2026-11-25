@@ -2,9 +2,7 @@
 name: over-loop
 description: >-
   over: Observe, Execute, Verify, Retro. Use this procedure for multi-step
-  tasks. Use an available orchestrator for worker and verifier agents.
-  Otherwise, use one agent. Record evidence on a task card. Drive the task to a
-  pull request.
+  tasks.
 ---
 
 # The over loop
