@@ -1,9 +1,10 @@
 ---
 name: over-loop
 description: >-
-  over: Observe, Execute, Verify, Retro. Use an available
-  orchestrator for worker and verifier agents. Otherwise, use one agent. Record
-  evidence on a task card. Drive the task to a pull request.
+  over: Observe, Execute, Verify, Retro. Use this procedure for multi-step
+  tasks. Use an available orchestrator for worker and verifier agents.
+  Otherwise, use one agent. Record evidence on a task card. Drive the task to a
+  pull request.
 ---
 
 # The over loop
@@ -21,11 +22,11 @@ task and the coordinator role.
 
 ## Task selection
 
-Skip this procedure for a small and simple task unless the operator explicitly
-requests it. A small and simple task has a narrow scope, low risk, and direct
-verification.
+Use this procedure for multi-step tasks. Handle small and simple tasks directly
+unless the operator explicitly requests this procedure. A small and simple task
+has a narrow scope, low risk, and direct verification.
 
-For a skipped task, make the change and verify it in the current session. Do
+For direct execution, make the change and verify it in the current session. Do
 not create a task card or dispatch agents. Do not require a pull request or CI
 unless the operator requests them. Ask the operator when the task scope is
 uncertain.
